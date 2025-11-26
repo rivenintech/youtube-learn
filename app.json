@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "YouTube Learn",
+    "slug": "youtube-learn",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/app-icon.png",
+    "scheme": "youtubelearn",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.anonymous.youtubelearn"
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/app-icon.svg"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/logo.png",
+          "imageWidth": 180,
+          "resizeMode": "contain",
+          "backgroundColor": "#8D99AE"
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": ["node_modules/@expo-google-fonts/poppins"]
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
