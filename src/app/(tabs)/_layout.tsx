@@ -1,3 +1,4 @@
+import { Fonts } from "@/src/constants/theme";
 import { Image } from "expo-image";
 import { Tabs } from "expo-router";
 import { StyleSheet } from "react-native";
@@ -9,7 +10,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: "#2B2D42",
         tabBarInactiveTintColor: "#FFFFFF",
         tabBarStyle: styles.tabBarStyle,
-        tabBarLabelStyle: styles.tabBarLabelStyle,
+        tabBarLabelStyle: [{ fontFamily: Fonts.regular }, styles.tabBarLabelStyle],
         headerShown: false,
       }}
     >
@@ -44,7 +45,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     letterSpacing: 1,
-    fontFamily: "Poppins",
   },
   tabBarStyle: {
     backgroundColor: "#8D99AE",
