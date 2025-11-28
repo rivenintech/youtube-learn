@@ -41,13 +41,15 @@ export default function VideosCategory({ title }: { title: string }) {
         keyExtractor={(item) => item.id}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
-          <View style={styles.itemContainer}>
-            <Image source={{ uri: "https://placehold.co/180x112" }} style={styles.itemImage} />
-            <ThemedText fontWeight="medium" numberOfLines={2} style={styles.itemTitle}>
-              {item.title}
-            </ThemedText>
-            <ThemedText style={styles.itemDate}>{formatDate(item.datetime)}</ThemedText>
-          </View>
+          <Link href={`/videos/${item.id}`}>
+            <View style={styles.itemContainer}>
+              <Image source={{ uri: "https://placehold.co/180x112" }} style={styles.itemImage} />
+              <ThemedText fontWeight="medium" numberOfLines={2} style={styles.itemTitle}>
+                {item.title}
+              </ThemedText>
+              <ThemedText style={styles.itemDate}>{formatDate(item.datetime)}</ThemedText>
+            </View>
+          </Link>
         )}
       />
     </View>
