@@ -1,38 +1,27 @@
 import { SearchBar } from "@/src/components/search-bar";
 import SortByModal from "@/src/components/sort-by-modal";
 import { ThemedText } from "@/src/components/themed-text";
+import { YTSearchAPI } from "@/src/utils/api";
 import { formatDate } from "@/src/utils/format-date";
 import { FlashList } from "@shopify/flash-list";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Search() {
-  const videos = [
-    {
-      id: "1",
-      title: "Introduction to React Native",
-      datetime: "2023-10-01T12:00:00Z",
-    },
-    {
-      id: "2",
-      title: "Getting Started with Expo",
-      datetime: "2023-10-02T12:00:00Z",
-    },
-    {
-      id: "3",
-      title: "Getting Started with Expo",
-      datetime: "2023-10-02T12:00:00Z",
-    },
-    {
-      id: "4",
-      title: "Getting Started with Expo",
-      datetime: "2023-10-02T12:00:00Z",
-    },
-  ];
-
   const [searchQuery, setSearchQuery] = useState("");
+
+  const { fetchNextPage, isFetching, data } = useInfiniteQuery({
+    queryKey: ["search", searchQuery],
+    queryFn: ({ pageParam }) => YTSearchAPI(searchQuery, pageParam),
+    getNextPageParam: (lastPage) => lastPage.nextPageToken,
+    initialPageParam: "",
+    enabled: searchQuery.trim() !== "", // Only run query if it's not empty
+  });
+
+  const videos = data?.pages.flatMap((page) => page.items);
 
   const handleSortByChange = (option: string) => {
     console.log("Selected sort option:", option);
@@ -42,25 +31,41 @@ export default function Search() {
     <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
       <View style={styles.searchBarContainer}>
         <SearchBar onChange={setSearchQuery} />
+
+        {videos ? (
+          <ThemedText style={{ fontSize: 10, lineHeight: 24, marginTop: 10 }}>
+            {data?.pages[0].pageInfo.totalResults} results found for: &quot;
+            {<ThemedText fontWeight="semibold">{searchQuery}</ThemedText>}&quot;
+          </ThemedText>
+        ) : (
+          <ThemedText style={{ fontSize: 10, lineHeight: 24, marginTop: 10 }}>
+            Enter a search term to find videos.
+          </ThemedText>
+        )}
       </View>
       <SortByModal onConfirm={handleSortByChange} />
       <FlashList
         data={videos}
         showsVerticalScrollIndicator={false}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(video) => video.id.videoId}
+        onEndReached={() => !isFetching && fetchNextPage()}
         renderItem={({ item }) => (
           <View>
-            <Image contentFit="cover" source={{ uri: "https://placehold.co/345x256/png" }} style={styles.image} />
+            <Image
+              recyclingKey={item.id.videoId}
+              contentFit="cover"
+              source={{ uri: item.snippet.thumbnails.high.url }}
+              style={styles.image}
+            />
             <View style={styles.content}>
               <ThemedText fontWeight="bold" style={styles.channelName}>
-                Channel Name
+                {item.snippet.channelTitle}
               </ThemedText>
               <ThemedText numberOfLines={2} style={styles.description}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam cursus lectus eu ligula tincidunt, a
-                tincidunt libero tincidunt.
+                {item.snippet.description}
               </ThemedText>
               <ThemedText numberOfLines={2} style={styles.date}>
-                {formatDate(item.datetime)}
+                {formatDate(item.snippet.publishedAt)}
               </ThemedText>
             </View>
           </View>
@@ -77,7 +82,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 24,
   },
   searchBarContainer: {
-    marginVertical: 30,
+    marginTop: 30,
   },
   image: {
     width: "100%",
