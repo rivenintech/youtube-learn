@@ -1,8 +1,10 @@
+import { SearchBar } from "@/src/components/search-bar";
 import SortByModal from "@/src/components/sort-by-modal";
 import { ThemedText } from "@/src/components/themed-text";
 import { formatDate } from "@/src/utils/format-date";
 import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
+import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -30,12 +32,17 @@ export default function Search() {
     },
   ];
 
+  const [searchQuery, setSearchQuery] = useState("");
+
   const handleSortByChange = (option: string) => {
     console.log("Selected sort option:", option);
   };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
+      <View style={styles.searchBarContainer}>
+        <SearchBar onChange={setSearchQuery} />
+      </View>
       <SortByModal onConfirm={handleSortByChange} />
       <FlashList
         data={videos}
@@ -68,6 +75,9 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     marginHorizontal: 24,
+  },
+  searchBarContainer: {
+    marginVertical: 30,
   },
   image: {
     width: "100%",

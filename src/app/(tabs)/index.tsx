@@ -1,4 +1,4 @@
-import { SearchBarPlaceholder } from "@/src/components/search-bar";
+import { SearchBar } from "@/src/components/search-bar";
 import VideosCategory from "@/src/components/videos-category";
 import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
@@ -26,7 +26,7 @@ export default function Index() {
     <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
       <View style={styles.header}>
         <Link href="/search" style={styles.searchLink}>
-          <SearchBarPlaceholder />
+          <SearchBar disabled />
         </Link>
         <Image source={require("@/assets/icons/settings-icon.svg")} style={styles.settingsIcon} />
       </View>
