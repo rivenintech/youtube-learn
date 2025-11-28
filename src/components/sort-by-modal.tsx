@@ -2,15 +2,19 @@ import { useState } from "react";
 import { Modal, Pressable, StyleSheet, View } from "react-native";
 import { ThemedText } from "./themed-text";
 
-const options = [
-  { label: "Upload date: latest", value: "latest" },
-  { label: "Upload date: oldest", value: "oldest" },
-  { label: "Most popular", value: "popular" },
-];
-
-export default function SortByModal({ onConfirm }: { onConfirm: (option: string) => void }) {
+export default function SortByModal({
+  options,
+  defaultOption,
+  onConfirm,
+}: {
+  options: { label: string; value: string }[];
+  defaultOption: string;
+  onConfirm: (option: string) => void;
+}) {
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(options[2]);
+  const [selectedOption, setSelectedOption] = useState(
+    options.find((opt) => opt.value === defaultOption) || options[0]
+  );
 
   const handleConfirm = () => {
     setModalVisible(false);

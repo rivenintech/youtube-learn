@@ -11,24 +11,27 @@ import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDebounce } from "use-debounce";
 
+const sortOptions = [
+  { label: "Upload date: latest", value: "date" },
+  { label: "Upload date: oldest", value: "relevance" }, // YouTube API doesn't support direct oldest sorting; using relevance as a placeholder
+  { label: "Most popular", value: "viewCount" },
+];
+
 export default function Search() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [sort, setSort] = useState("viewCount");
   // Avoid excessive API calls (on every keystroke) by debouncing the search query
   const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
 
   const { fetchNextPage, isFetching, data } = useInfiniteQuery({
-    queryKey: ["search", debouncedSearchQuery],
-    queryFn: ({ pageParam }) => YTSearchAPI(debouncedSearchQuery, pageParam),
+    queryKey: ["search", debouncedSearchQuery, sort],
+    queryFn: ({ pageParam }) => YTSearchAPI(debouncedSearchQuery, sort, pageParam),
     getNextPageParam: (lastPage) => lastPage.nextPageToken,
     initialPageParam: "",
     enabled: debouncedSearchQuery.trim() !== "", // Only run query if it's not empty
   });
 
   const videos = data?.pages.flatMap((page) => page.items);
-
-  const handleSortByChange = (option: string) => {
-    console.log("Selected sort option:", option);
-  };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
@@ -46,7 +49,7 @@ export default function Search() {
           </ThemedText>
         )}
       </View>
-      <SortByModal onConfirm={handleSortByChange} />
+      <SortByModal options={sortOptions} defaultOption="viewCount" onConfirm={(option) => setSort(option)} />
       <FlashList
         data={videos}
         showsVerticalScrollIndicator={false}
