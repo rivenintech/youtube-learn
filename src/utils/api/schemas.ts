@@ -12,9 +12,7 @@ export const VideoSchema = v.object({
       }),
       snippet: v.object({
         publishedAt: v.string(),
-        channelId: v.string(),
         title: v.string(),
-        description: v.string(),
         thumbnails: v.object({
           default: v.object({
             url: v.string(),
@@ -33,6 +31,23 @@ export const VideoSchema = v.object({
           }),
         }),
         channelTitle: v.string(),
+      }),
+    })
+  ),
+});
+
+export const VideoStatisticsSchema = v.object({
+  items: v.array(
+    v.object({
+      id: v.string(),
+      snippet: v.object({
+        channelTitle: v.string(),
+        title: v.string(),
+        description: v.string(),
+      }),
+      statistics: v.object({
+        viewCount: v.string(),
+        likeCount: v.string(),
       }),
     })
   ),

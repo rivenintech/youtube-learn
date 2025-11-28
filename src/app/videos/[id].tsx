@@ -1,5 +1,7 @@
 import SlidingScreen from "@/src/components/sliding-screen";
 import { ThemedText } from "@/src/components/themed-text";
+import { YTVideoStatisticsAPI } from "@/src/utils/api";
+import { useQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
 import { StyleSheet, View } from "react-native";
@@ -10,20 +12,25 @@ export default function VideoDetails() {
   const { id } = useLocalSearchParams();
   const video = require("@/assets/video/broadchurch.mp4");
 
+  const { data: apiData } = useQuery({
+    queryKey: ["videoDetails", id],
+    queryFn: () => YTVideoStatisticsAPI(id as string),
+  });
+
   return (
     <SafeAreaView>
       {/* Video element */}
       <Video source={video} controls style={styles.videoPlayer} />
       <View style={styles.container}>
         <ThemedText fontWeight="semibold" numberOfLines={1} style={styles.title}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          {apiData?.items[0].snippet.title}
         </ThemedText>
         <View style={styles.channelRow}>
           <View style={styles.channelImageBg}>
             <Image source={require("@/assets/icons/person-icon.svg")} style={styles.channelImage} />
           </View>
           <ThemedText fontWeight="bold" style={styles.channelName}>
-            Channel Name
+            {apiData?.items[0].snippet.channelTitle}
           </ThemedText>
         </View>
         <SlidingScreen tabs={["Details", "Notes"]} containerStyle={styles.slidingScreen}>
@@ -33,12 +40,7 @@ export default function VideoDetails() {
               <ThemedText fontWeight="semibold" style={styles.sectionTitle}>
                 Description
               </ThemedText>
-              <ThemedText style={styles.description}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque venenatis semper purus a accumsan.
-                Donec accumsan pulvinar metus, euismod lacinia libero congue non. Vivamus ut massa finibus, consequat
-                dui commodo, semper magna. Donec nec justo consectetur lacus facilisis tristique eget quis nulla. Cras
-                sodales lacinia nisi, in dictum elit commodo in.
-              </ThemedText>
+              <ThemedText style={styles.description}>{apiData?.items[0].snippet.description}</ThemedText>
             </View>
             <View>
               <ThemedText fontWeight="semibold" style={styles.sectionTitle}>
@@ -48,14 +50,14 @@ export default function VideoDetails() {
                 <View style={styles.statsBox}>
                   <Image source={require("@/assets/icons/views-icon.svg")} style={styles.statsIcon} />
                   <ThemedText fontWeight="semibold" style={styles.statsText}>
-                    25268952 views
+                    {apiData?.items[0].statistics.viewCount} views
                   </ThemedText>
                 </View>
 
                 <View style={styles.statsBox}>
                   <Image source={require("@/assets/icons/likes-icon.svg")} style={styles.statsIcon} />
                   <ThemedText fontWeight="semibold" style={styles.statsText}>
-                    12345 likes
+                    {apiData?.items[0].statistics.likeCount} likes
                   </ThemedText>
                 </View>
               </View>

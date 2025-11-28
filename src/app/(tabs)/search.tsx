@@ -6,6 +6,7 @@ import { formatDate } from "@/src/utils/format-date";
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
+import { Link } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -56,7 +57,7 @@ export default function Search() {
         keyExtractor={(video) => video.id.videoId}
         onEndReached={() => !isFetching && fetchNextPage()}
         renderItem={({ item }) => (
-          <View>
+          <Link href={`/videos/${item.id.videoId}`}>
             <Image
               recyclingKey={item.id.videoId}
               contentFit="cover"
@@ -68,13 +69,13 @@ export default function Search() {
                 {item.snippet.channelTitle}
               </ThemedText>
               <ThemedText numberOfLines={2} style={styles.description}>
-                {item.snippet.description}
+                {item.snippet.title}
               </ThemedText>
               <ThemedText numberOfLines={2} style={styles.date}>
                 {formatDate(item.snippet.publishedAt)}
               </ThemedText>
             </View>
-          </View>
+          </Link>
         )}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
