@@ -1,3 +1,4 @@
+import SortByModal from "@/src/components/sort-by-modal";
 import { ThemedText } from "@/src/components/themed-text";
 import { formatDate } from "@/src/utils/format-date";
 import { FlashList } from "@shopify/flash-list";
@@ -29,8 +30,13 @@ export default function Search() {
     },
   ];
 
+  const handleSortByChange = (option: string) => {
+    console.log("Selected sort option:", option);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
+      <SortByModal onConfirm={handleSortByChange} />
       <FlashList
         data={videos}
         showsVerticalScrollIndicator={false}
