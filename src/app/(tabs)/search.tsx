@@ -6,8 +6,8 @@ import { formatDate } from "@/src/utils/format-date";
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
-import { Link } from "expo-router";
-import { useState } from "react";
+import { Link, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDebounce } from "use-debounce";
@@ -19,10 +19,17 @@ const sortOptions = [
 ];
 
 export default function Search() {
+  const { query } = useLocalSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [sort, setSort] = useState("viewCount");
   // Avoid excessive API calls (on every keystroke) by debouncing the search query
   const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
+
+  useEffect(() => {
+    if (typeof query === "string") {
+      setSearchQuery(query);
+    }
+  }, [query]);
 
   const { fetchNextPage, isFetching, data } = useInfiniteQuery({
     queryKey: ["search", debouncedSearchQuery, sort],
@@ -37,7 +44,7 @@ export default function Search() {
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
       <View style={styles.searchBarContainer}>
-        <SearchBar onChange={setSearchQuery} />
+        <SearchBar defaultValue={searchQuery} onChange={setSearchQuery} />
 
         {videos ? (
           <ThemedText style={{ fontSize: 10, lineHeight: 24, marginTop: 10 }}>

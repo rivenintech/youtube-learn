@@ -1,35 +1,29 @@
 import { FlashList } from "@shopify/flash-list";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { StyleSheet, View } from "react-native";
+import { YTSearchAPI } from "../utils/api";
 import { formatDate } from "../utils/format-date";
 import { ThemedText } from "./themed-text";
 
-const videos = [
-  {
-    id: "1",
-    title:
-      "Lorem ipsum dolor sit amet consectetur adipiscing elit Lorem ipsum dolor sit amet consectetur adipiscing elit",
-    datetime: "2024-08-12T00:00:00Z",
-  },
-  {
-    id: "2",
-    title: "Video 2",
-    datetime: "2024-06-02T00:00:00Z",
-  },
-  { id: "3", title: "Video 3", datetime: "2024-06-03T00:00:00Z" },
-  { id: "4", title: "Video 4", datetime: "2024-06-04T00:00:00Z" },
-  { id: "5", title: "Video 5", datetime: "2024-06-05T00:00:00Z" },
-];
-
 export default function VideosCategory({ title }: { title: string }) {
+  const { fetchNextPage, isFetching, data } = useInfiniteQuery({
+    queryKey: ["search", title],
+    queryFn: ({ pageParam }) => YTSearchAPI(title, "relevance", pageParam),
+    getNextPageParam: (lastPage) => lastPage.nextPageToken,
+    initialPageParam: "",
+  });
+
+  const videos = data?.pages.flatMap((page) => page.items);
+
   return (
     <View>
       <View style={styles.headerContainer}>
         <ThemedText fontWeight="semibold" style={styles.headerTitle}>
           {title}
         </ThemedText>
-        <Link href="/(tabs)/search">
+        <Link href={{ pathname: "/(tabs)/search", params: { query: title } }}>
           <ThemedText style={styles.showMoreText}>Show More</ThemedText>
         </Link>
       </View>
@@ -38,16 +32,21 @@ export default function VideosCategory({ title }: { title: string }) {
         horizontal
         data={videos}
         ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(video) => video.id.videoId}
+        onEndReached={() => !isFetching && fetchNextPage()}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
-          <Link href={`/videos/${item.id}`}>
+          <Link href={`/videos/${item.id.videoId}`}>
             <View style={styles.itemContainer}>
-              <Image source={{ uri: "https://placehold.co/180x112" }} style={styles.itemImage} />
+              <Image
+                recyclingKey={item.id.videoId}
+                source={{ uri: item.snippet.thumbnails.high.url }}
+                style={styles.itemImage}
+              />
               <ThemedText fontWeight="medium" numberOfLines={2} style={styles.itemTitle}>
-                {item.title}
+                {item.snippet.title}
               </ThemedText>
-              <ThemedText style={styles.itemDate}>{formatDate(item.datetime)}</ThemedText>
+              <ThemedText style={styles.itemDate}>{formatDate(item.snippet.publishedAt)}</ThemedText>
             </View>
           </Link>
         )}

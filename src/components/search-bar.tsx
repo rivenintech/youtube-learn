@@ -2,7 +2,15 @@ import { Image } from "expo-image";
 import { StyleSheet, View } from "react-native";
 import { ThemedTextInput } from "./themed-text";
 
-export function SearchBar({ disabled, onChange }: { disabled?: boolean; onChange?: (text: string) => void }) {
+export function SearchBar({
+  defaultValue,
+  disabled,
+  onChange,
+}: {
+  defaultValue?: string;
+  disabled?: boolean;
+  onChange?: (text: string) => void;
+}) {
   return (
     <View style={styles.container}>
       <Image source={require("@/assets/icons/search-icon.svg")} style={styles.icon} />
@@ -12,6 +20,7 @@ export function SearchBar({ disabled, onChange }: { disabled?: boolean; onChange
         placeholderTextColor="rgba(43, 45, 66, 0.6)"
         style={styles.input}
         placeholder="Search videos"
+        defaultValue={defaultValue}
       />
     </View>
   );
