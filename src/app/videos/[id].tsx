@@ -19,7 +19,9 @@ export default function VideoDetails() {
           Lorem ipsum dolor sit amet, consectetur adipiscing elit.
         </ThemedText>
         <View style={styles.channelRow}>
-          <Image source={{}} style={styles.channelImage} />
+          <View style={styles.channelImageBg}>
+            <Image source={require("@/assets/icons/person-icon.svg")} style={styles.channelImage} />
+          </View>
           <ThemedText fontWeight="bold" style={styles.channelName}>
             Channel Name
           </ThemedText>
@@ -85,10 +87,18 @@ const styles = StyleSheet.create({
     gap: 12,
     marginTop: 8,
   },
-  channelImage: {
+  channelImageBg: {
     width: 48,
     height: 48,
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 24,
+    backgroundColor: "#2B2D42",
+  },
+  channelImage: {
+    width: 20,
+    height: 20,
+    tintColor: "#FFFFFF",
   },
   channelName: {
     fontSize: 14,
