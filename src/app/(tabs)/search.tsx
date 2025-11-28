@@ -9,16 +9,19 @@ import { Image } from "expo-image";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDebounce } from "use-debounce";
 
 export default function Search() {
   const [searchQuery, setSearchQuery] = useState("");
+  // Avoid excessive API calls (on every keystroke) by debouncing the search query
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
 
   const { fetchNextPage, isFetching, data } = useInfiniteQuery({
-    queryKey: ["search", searchQuery],
-    queryFn: ({ pageParam }) => YTSearchAPI(searchQuery, pageParam),
+    queryKey: ["search", debouncedSearchQuery],
+    queryFn: ({ pageParam }) => YTSearchAPI(debouncedSearchQuery, pageParam),
     getNextPageParam: (lastPage) => lastPage.nextPageToken,
     initialPageParam: "",
-    enabled: searchQuery.trim() !== "", // Only run query if it's not empty
+    enabled: debouncedSearchQuery.trim() !== "", // Only run query if it's not empty
   });
 
   const videos = data?.pages.flatMap((page) => page.items);
@@ -35,7 +38,7 @@ export default function Search() {
         {videos ? (
           <ThemedText style={{ fontSize: 10, lineHeight: 24, marginTop: 10 }}>
             {data?.pages[0].pageInfo.totalResults} results found for: &quot;
-            {<ThemedText fontWeight="semibold">{searchQuery}</ThemedText>}&quot;
+            {<ThemedText fontWeight="semibold">{debouncedSearchQuery}</ThemedText>}&quot;
           </ThemedText>
         ) : (
           <ThemedText style={{ fontSize: 10, lineHeight: 24, marginTop: 10 }}>
