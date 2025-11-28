@@ -14,7 +14,8 @@
     "android": {
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.youtubelearn"
+      "package": "com.anonymous.youtubelearn",
+      "permissions": ["android.permission.FOREGROUND_SERVICE", "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"]
     },
     "web": {
       "output": "static",
@@ -40,6 +41,18 @@
             "node_modules/@expo-google-fonts/poppins/600SemiBold/Poppins_600SemiBold.ttf",
             "node_modules/@expo-google-fonts/poppins/700Bold/Poppins_700Bold.ttf"
           ]
+        }
+      ],
+      [
+        "react-native-video",
+        {
+          "enableNotificationControls": true,
+          "androidExtensions": {
+            "useExoplayerRtsp": false,
+            "useExoplayerSmoothStreaming": false,
+            "useExoplayerHls": false,
+            "useExoplayerDash": false
+          }
         }
       ]
     ],

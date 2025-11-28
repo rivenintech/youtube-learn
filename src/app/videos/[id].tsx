@@ -4,13 +4,16 @@ import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Video from "react-native-video";
 
 export default function VideoDetails() {
   const { id } = useLocalSearchParams();
+  const video = require("@/assets/video/broadchurch.mp4");
 
   return (
     <SafeAreaView>
       {/* Video element */}
+      <Video source={video} controls style={styles.videoPlayer} />
       <View style={styles.container}>
         <ThemedText fontWeight="semibold" numberOfLines={1} style={styles.title}>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -65,6 +68,11 @@ export default function VideoDetails() {
 }
 
 const styles = StyleSheet.create({
+  videoPlayer: {
+    width: "100%",
+    height: 280,
+    backgroundColor: "#000000",
+  },
   container: {
     padding: 16,
   },
