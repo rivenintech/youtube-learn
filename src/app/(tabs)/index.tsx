@@ -28,7 +28,9 @@ export default function Index() {
         <Link href="/search" style={styles.searchLink}>
           <SearchBar disabled />
         </Link>
-        <Image source={require("@/assets/icons/settings-icon.svg")} style={styles.settingsIcon} />
+        <Link href="/settings">
+          <Image source={require("@/assets/icons/settings-icon.svg")} style={styles.settingsIcon} />
+        </Link>
       </View>
       <FlashList
         data={Categories}
