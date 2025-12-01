@@ -1,14 +1,63 @@
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Alert, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedText } from "../components/themed-text";
+import TimePicker from "../components/time-picker";
 import Toggle from "../components/toggle";
+import { cancelReminder, getScheduledReminder, scheduleReminder } from "../utils/notifications";
 
 export default function SettingsPage() {
+  const isMounted = useRef(false);
   const [reminderEnabled, setReminderEnabled] = useState(false);
+  const [reminderTime, setReminderTime] = useState({ hour: 12, minute: 0 });
   const { back } = useRouter();
+
+  // Load existing notification settings on mount
+  useEffect(() => {
+    const fetchNotification = async () => {
+      const notification = await getScheduledReminder("daily-learning-reminder");
+
+      if (notification) {
+        setReminderEnabled(true);
+        const trigger = notification.trigger as { hour: number; minute: number };
+        setReminderTime({ hour: trigger.hour, minute: trigger.minute });
+      }
+    };
+
+    fetchNotification();
+  }, []);
+
+  useEffect(() => {
+    // Skip the first render
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+
+    const updateNotification = async () => {
+      if (!reminderEnabled) {
+        cancelReminder("daily-learning-reminder");
+      } else {
+        // Add or update the scheduled notification
+        try {
+          await scheduleReminder("daily-learning-reminder", reminderTime);
+        } catch (error) {
+          // Permission error handling
+          if (error instanceof Error && error.cause === "permissions") {
+            setReminderEnabled(false);
+            Alert.alert(
+              "⚠️ Permission Denied",
+              "Notification permissions are not granted. Please enable them in your device settings to receive reminders."
+            );
+          }
+        }
+      }
+    };
+
+    updateNotification();
+  }, [reminderEnabled, reminderTime]);
 
   return (
     <SafeAreaView>
@@ -36,10 +85,7 @@ export default function SettingsPage() {
           </View>
           <View style={styles.reminderSettingsRow}>
             <ThemedText style={styles.repeatText}>Repeat everyday at:</ThemedText>
-            <View style={styles.timeRow}>
-              <Image source={require("@/assets/icons/clock-icon.svg")} style={styles.clockIcon} />
-              <ThemedText style={styles.timeText}>12:00</ThemedText>
-            </View>
+            <TimePicker time={reminderTime} onTimeChange={setReminderTime} />
             <Toggle value={reminderEnabled} onValueChange={setReminderEnabled} />
           </View>
           <ThemedText fontWeight="semibold" style={styles.reminderDescription}>
@@ -121,15 +167,6 @@ const styles = StyleSheet.create({
   repeatText: {
     fontSize: 12,
     lineHeight: 24,
-  },
-  timeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  clockIcon: {
-    width: 24,
-    height: 24,
   },
   timeText: {
     fontSize: 12,
